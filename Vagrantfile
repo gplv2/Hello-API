@@ -74,7 +74,7 @@ Vagrant.configure("2") do |config|
   #config.vm.provision "shell", :inline => "apt-get -o 'Dpkg::Options::=--force-confnew' -f install"
 
   # Our custom OS upgrade script
-  config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh"
+  config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh" + " " + dbType
 
   # postgres DB setup
   config.vm.provision "shell" do |s|
