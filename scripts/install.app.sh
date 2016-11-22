@@ -75,7 +75,7 @@ if [ -d "/var/www" ]; then
 fi
 
 #sudo su - vagrant -c "cd /var/www && git clone https://github.com/Porto-SAP/Hello-API.git ${APP_HME_DIR}"
-sudo su - vagrant -c "cd /var/www && git https://github.com/gplv2/Hello-API.git ${APP_HME_DIR}"
+sudo su - vagrant -c "cd /var/www && git clone https://github.com/gplv2/Hello-API.git ${APP_HME_DIR}"
 # git@github.com:gplv2/Hello-API.git / https://github.com/gplv2/Hello-API.git
 
 echo "Fixing ownerships and permissions"
