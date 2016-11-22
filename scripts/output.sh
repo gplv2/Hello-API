@@ -12,11 +12,16 @@ BRIDGED_IP=ifconfig | grep 'inet addr' | cut -d ':' -f 2 | awk '{ print $1 }' | 
 
 echo "Vagrant Box shell provisioned!"
 
-echo "Add this to your local /etc/hosts or equivalent file\n" 
+if [ -z "${BRIDGED_IP}" ]; then
+   echo "Cannot find a suitable private ip to connect to the app\n" 
+else
+   echo "Add this to your local /etc/hosts or equivalent file\n" 
 
-echo << EOF
+   cat <<EOF
 ${BRIDGED_IP} ${APP_URL}
 ${BRIDGED_IP} api.${APP_URL}
 ${BRIDGED_IP} admin.${APP_URL}
 EOF
+
+fi
 
