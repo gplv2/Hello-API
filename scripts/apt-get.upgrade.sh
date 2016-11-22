@@ -20,6 +20,9 @@ locale-gen
 # Generating locales...
 DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 
+# since all services run on localhost, set those in the vagrant hostfile 
+echo "127.0.0.1 redis" >> /etc/hosts
+
 # Fix package problems & upgrade dist immediately
 DEBIAN_FRONTEND=noninteractive apt-get update
 
