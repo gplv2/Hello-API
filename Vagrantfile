@@ -25,8 +25,11 @@ Vagrant.configure("2") do |config|
 
   # pull from .env , copy the .env.example to .env 
   dbUser = ENV['DB_USERNAME']
-  dbName = ENV['DB_PASSWORD']
+  dbName = ENV['DB_DATABASE']
+  dbPass = ENV['DB_PASSWORD']
   dbType = ENV['DB_CONNECTION']
+
+  # it might be wise to not use spaces in usernames/passwords ...
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -79,7 +82,7 @@ Vagrant.configure("2") do |config|
   # postgres DB setup
   config.vm.provision "shell" do |s|
     s.name = "Creating Postgres Database"
-    s.inline = localscriptDir + "/create.db.sh " + dbName + " " + dbUser + " " + dbType
+    s.inline = localscriptDir + "/create.db.sh " + dbName + " " + dbUser + " " + dbPass + " " + dbType
   end
 
   # Service control
