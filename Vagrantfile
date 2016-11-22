@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  config.vm.network "forwarded_port", guest: 80, host: 8180
+  config.vm.network "forwarded_port", guest: 80, host: 8680
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
   #config.vm.provision "shell", :inline => "apt-get -o 'Dpkg::Options::=--force-confnew' -f install"
 
   # Our custom OS upgrade script
-  config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh" + " " + dbType
+  config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh " + dbType
 
   # postgres DB setup
   config.vm.provision "shell" do |s|
