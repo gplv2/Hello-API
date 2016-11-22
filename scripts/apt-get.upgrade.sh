@@ -4,8 +4,39 @@ export $DEBIAN_FRONTEND
 
 DBTYPE=$1
 
-echo "Finishing off install"
+echo "Finishing off standard install"
 
+printf "Fixing locales warnings"
+echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+
+# fix locales
+locale-gen "en_US.UTF-8"
+locale-gen "nl_BE.UTF-8"
+
+echo "nl_BE.UTF-8 UTF-8" >> /etc/locale.gen
+
+locale-gen
+
+# Generating locales...
+DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+
+# Fix package problems & upgrade dist immediately
+DEBIAN_FRONTEND=noninteractive apt-get update
+
+DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
+DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
+
+[ -r /etc/lsb-release ] && . /etc/lsb-release
+if [ -z "$DISTRIB_RELEASE" ] && [ -x /usr/bin/lsb_release ]; then
+    # Fall back to using the very slow lsb_release utility
+    DISTRIB_RELEASE=$(lsb_release -s -r)
+    DISTRIB_CODENAME=$(lsb_release -s -c)
+fi
+
+printf "Preparing for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
+
+# common general packages for all ubuntu versions
+DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" zip unzip
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
 
 [ -r /etc/lsb-release ] && . /etc/lsb-release
