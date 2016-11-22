@@ -101,7 +101,7 @@ Vagrant.configure("2") do |config|
   # s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
   config.vm.provision "shell" do |s|
       s.name = "Setup NGINX configs"
-      s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['API_DOMAIN'] + " /var/www/hello-api/public" + " 80"+ " 443"
+      s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['APP_URL'] + " /var/www/hello-api/public" + " 80"+ " 443"
   end
 
   config.vm.provision "shell" do |s|

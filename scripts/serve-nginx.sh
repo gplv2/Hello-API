@@ -3,7 +3,7 @@
 DOMAIN=$1
 WEBROOT=$2
 
-if [ -z "${DOMAIN}" ]; then
+if [ -z "${1}" ]; then
     printf "Can't be called without arguments"
     exit 1;
 fi
@@ -18,10 +18,12 @@ openssl genrsa -out "/etc/nginx/ssl/$DOMAIN.key" 1024 2>/dev/null
 openssl req -new -key /etc/nginx/ssl/$DOMAIN.key -out /etc/nginx/ssl/$DOMAIN.csr -subj "/CN=$DOMAIN/O=Vagrant/C=UK" 2>/dev/null
 openssl x509 -req -days 365 -in /etc/nginx/ssl/$DOMAIN.csr -signkey /etc/nginx/ssl/$DOMAIN.key -out /etc/nginx/ssl/$DOMAIN.crt 2>/dev/null
 
+# You'll need to import it in your browser but it will work over https
+
 block="server {
     listen ${3:-80};
     listen ${4:-443} ssl;
-    server_name $DOMAIN;
+    server_name *.$DOMAIN;
     root \"$WEBROOT\";
 
     index index.html index.php app.php;
