@@ -42,14 +42,6 @@ printf "Preparing for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" zip unzip
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
 
-[ -r /etc/lsb-release ] && . /etc/lsb-release
-
-if [ -z "$DISTRIB_RELEASE" ] && [ -x /usr/bin/lsb_release ]; then
-    # Fall back to using the very slow lsb_release utility
-    DISTRIB_RELEASE=$(lsb_release -s -r)
-    DISTRIB_CODENAME=$(lsb_release -s -c)
-fi
-
 echo "Setting up for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
 
 echo "Provisioning virtual machine"
