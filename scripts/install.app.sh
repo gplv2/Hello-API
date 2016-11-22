@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 export DEBIAN_FRONTEND=noninteractive
 
+APP_HME_DIR=$1
+
+if [ -r /var/www/${APP_HME_DIR}/storage/logs/provisioned.status ]; then
+    echo "Status is already provisioned, you need to remove this file to do it again"
+    exit;
+fi
+
 [ -r /etc/lsb-release ] && . /etc/lsb-release
 
 if [ -z "$DISTRIB_RELEASE" ] && [ -x /usr/bin/lsb_release ]; then
@@ -12,19 +19,22 @@ fi
 # If you disable xdebug, you cant use tools like phpspec that depend on
 # phpunit dumping coverage data
 
-echo "Disable xdebug"
+if [ ! -x "/var/www/${APP_HME_DIR}/storage/logs/xdebug.enable" ]; then 
 
-if [ -L /etc/php/7.0/cli/conf.d/20-xdebug.ini ]; then
-    echo "Disabling Xdebug for compilation - cli"
-    rm -f /etc/php/7.0/cli/conf.d/20-xdebug.ini
+    echo "Disable xdebug"
+
+    if [ -L /etc/php/7.0/cli/conf.d/20-xdebug.ini ]; then
+        echo "Disabling Xdebug for compilation - cli"
+        rm -f /etc/php/7.0/cli/conf.d/20-xdebug.ini
+    fi
+
+    if [ -L /etc/php/7.0/fpm/conf.d/20-xdebug.ini ]; then
+        echo "Disabling Xdebug for compilation - fpm"
+        rm -f /etc/php/7.0/fpm/conf.d/20-xdebug.ini
+    fi
 fi
 
-if [ -L /etc/php/7.0/fpm/conf.d/20-xdebug.ini ]; then
-    echo "Disabling Xdebug for compilation - fpm"
-    rm -f /etc/php/7.0/fpm/conf.d/20-xdebug.ini
-fi
-
-echo "Setting up Hello-API"
+echo "Setting up Hello-API in $1"
 
 # Here you could use deploy keys for your non-vagrant private app which you would
 # provision remotely with for example terraform.
@@ -62,40 +72,39 @@ if [ -d "/var/www" ]; then
     chown vagrant:vagrant /var/www/
 fi
 
-sudo su - vagrant -c "cd /var/www && git clone https://github.com/Porto-SAP/Hello-API.git hello-api"
+sudo su - vagrant -c "cd /var/www && git clone https://github.com/Porto-SAP/Hello-API.git ${APP_HME_DIR}"
 
 echo "Fixing ownerships and permissions"
 
 chown vagrant:vagrant /var/www
-chown -R vagrant:vagrant /var/www/hello-api
+chown -R vagrant:vagrant /var/www/${APP_HME_DIR}
 
 echo "Launching composer install"
-sudo su - vagrant -c "cd /var/www/hello-api && composer install --no-progress"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer install --no-progress"
 
 # dump autoload 1 time before migrate, it seems to need/want it
-sudo su - vagrant -c "cd /var/www/hello-api && composer dump-autoload"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer dump-autoload"
 
 echo "Configuring the application database config"
-
 # Copy .env.example to .env
-sudo su - vagrant -c "cp /var/www/hello-api/.env.example /var/www/hello-api/.env"
-
-# In case you need to change port numbers
-if [ ! -x "/var/www/hello-api/.env" ]; then 
-    echo "Verifying postgres DB port"
-    #sed -i 's/DB_PORT=5433/DB_PORT=5432/' /var/www/hello-api/.env
+if [ ! -x "/var/www/${APP_HME_DIR}/.env" ]; then 
+    sudo su - vagrant -c "cp /var/www/${APP_HME_DIR}/.env.example /var/www/${APP_HME_DIR}/.env"
+    # In case you need to change port numbers
+    # echo "Verifying postgres DB port"
+    # sed -i 's/DB_PORT=5433/DB_PORT=5432/' /var/www/${APP_HME_DIR}/.env
 fi
 
 echo "Completing laravel installation ( as vagrant user)"
 
 echo "Create migration table"
-sudo su - vagrant -c "cd /var/www/hello-api && php artisan migrate:install"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan migrate:install"
 echo "Perform migrations"
-sudo su - vagrant -c "cd /var/www/hello-api && php artisan migrate"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan migrate"
 echo "Vendor publish (configs)"
-sudo su - vagrant -c "cd /var/www/hello-api && php artisan vendor:publish"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan vendor:publish"
 echo "Optimize"
-sudo su - vagrant -c "cd /var/www/hello-api && php artisan optimize"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan optimize"
 echo "Dump autoload"
-sudo su - vagrant -c "cd /var/www/hello-api && composer dump-autoload"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer dump-autoload"
 
+touch /var/www/${APP_HME_DIR}/storage/logs/provisioned.status

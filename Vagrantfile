@@ -28,6 +28,9 @@ Vagrant.configure("2") do |config|
   dbName = ENV['DB_DATABASE']
   dbPass = ENV['DB_PASSWORD']
   dbType = ENV['DB_CONNECTION']
+  
+  # pass the www subdir to the scripts
+  appHomeDir = "hello-api"
 
   # it might be wise to not use spaces in usernames/passwords ...
 
@@ -79,6 +82,12 @@ Vagrant.configure("2") do |config|
   # Our custom OS upgrade script
   config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh " + dbType
 
+  # disable xdebug from being disabled (...) by touching this file
+  config.vm.provision "shell" do |s|
+    s.name = "Enabling xdebug"
+    s.inline = "touch /var/www/" + appHomeDir + "/storage/logs/xdebug.enable"
+  end
+
   # postgres DB setup
   config.vm.provision "shell" do |s|
     s.name = "Creating PostgresDB/MariaDB"
@@ -94,20 +103,27 @@ Vagrant.configure("2") do |config|
   # Deploy the app
   config.vm.provision "shell" do |s|
     s.name = "Installing Hello-Api framework"
-    s.inline = localscriptDir + "/install.app.sh"
+    s.inline = localscriptDir + "/install.app.sh " + appHomeDir
   end
 
   # setup the nginx site using script
   # s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
   config.vm.provision "shell" do |s|
       s.name = "Setup NGINX configs"
-      s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['APP_URL'] + " /var/www/hello-api/public" + " 80"+ " 443"
+      s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['APP_URL'] + " /var/www/" + appHomeDir +"/public" + " 80"+ " 443"
   end
 
   config.vm.provision "shell" do |s|
     s.name = "Restarting Nginx and PHPFPM"
     s.inline = "sudo service nginx restart; sudo service php7.0-fpm restart"
   end
+
+  config.vm.provision "shell" do |s|
+    s.name = "Finish and ouput status"
+    s.inline = localscriptDir + "/output.sh" + " " + ENV['APP_URL']
+  end
+
+  # output some stuff
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
