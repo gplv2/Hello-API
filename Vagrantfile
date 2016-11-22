@@ -90,7 +90,7 @@ Vagrant.configure("2") do |config|
 
   # Deploy the app
   config.vm.provision "shell" do |s|
-    s.name = "Installing GRB GIMT framework"
+    s.name = "Installing Hello-Api framework"
     s.inline = localscriptDir + "/install.app.sh"
   end
 
@@ -98,7 +98,7 @@ Vagrant.configure("2") do |config|
   # s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
   config.vm.provision "shell" do |s|
       s.name = "Setup NGINX configs"
-      s.inline = localscriptDir + "/serve-nginx.sh" + " hello.dev"+ " /var/www/grb-api/public" + " 80"+ " 443"
+      s.inline = localscriptDir + "/serve-nginx.sh" + " hello.dev"+ " /var/www/Hello-Api/public" + " 80"+ " 443"
   end
 
   config.vm.provision "shell" do |s|
