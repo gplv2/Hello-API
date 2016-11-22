@@ -82,11 +82,11 @@ Vagrant.configure("2") do |config|
   # Our custom OS upgrade script
   config.vm.provision "shell", :inline => localscriptDir + "/apt-get.upgrade.sh " + dbType
 
-  # disable xdebug from being disabled (...) by touching this file
-  config.vm.provision "shell" do |s|
-    s.name = "Enabling xdebug"
-    s.inline = "touch /var/www/" + appHomeDir + "/storage/logs/xdebug.enable"
-  end
+  # uncomment to disable xdebug from being disabled (*ploink*) by touching this file on the vm
+  #config.vm.provision "shell" do |s|
+  #  s.name = "Enabling xdebug"
+  #  s.inline = "#touch /var/log/provision/xdebug.enable"
+  #end
 
   # postgres DB setup
   config.vm.provision "shell" do |s|

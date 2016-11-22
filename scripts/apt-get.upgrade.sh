@@ -11,7 +11,7 @@ echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 
 # fix locales
 locale-gen "en_US.UTF-8"
-locale-gen "nl_BE.UTF-8"
+# locale-gen "nl_BE.UTF-8"
 
 echo "nl_BE.UTF-8 UTF-8" >> /etc/locale.gen
 
@@ -22,6 +22,13 @@ DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 
 # since all services run on localhost, set those in the vagrant hostfile 
 echo "127.0.0.1 redis" >> /etc/hosts
+
+# create a log dir that affects the server
+
+if [ ! -d "/var/log/provision" ]; then
+    mkdir /var/log/provision 2>/dev/null
+    chown vagrant:vagrant /var/www/provision
+fi
 
 # Fix package problems & upgrade dist immediately
 DEBIAN_FRONTEND=noninteractive apt-get update

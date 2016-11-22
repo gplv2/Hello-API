@@ -3,6 +3,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 APP_HME_DIR=$1
 
+# is this app provisioned already ? (would mess / error out on things like db migrations)
 if [ -r /var/www/${APP_HME_DIR}/storage/logs/provisioned.status ]; then
     echo "Status is already provisioned, you need to remove this file to do it again"
     exit;
@@ -18,8 +19,7 @@ fi
 
 # If you disable xdebug, you cant use tools like phpspec that depend on
 # phpunit dumping coverage data
-
-if [ ! -x "/var/www/${APP_HME_DIR}/storage/logs/xdebug.enable" ]; then 
+if [ ! -x "/var/log/provision/xdebug.enable" ]; then 
 
     echo "Disable xdebug"
 
@@ -33,6 +33,8 @@ if [ ! -x "/var/www/${APP_HME_DIR}/storage/logs/xdebug.enable" ]; then
         rm -f /etc/php/7.0/fpm/conf.d/20-xdebug.ini
     fi
 fi
+
+# this is a choice that affects the server
 
 echo "Setting up Hello-API in $1"
 
@@ -107,4 +109,5 @@ sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan optimize"
 echo "Dump autoload"
 sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer dump-autoload"
 
+# Mark end of provisioning for this app
 touch /var/www/${APP_HME_DIR}/storage/logs/provisioned.status
