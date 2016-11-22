@@ -81,7 +81,7 @@ Vagrant.configure("2") do |config|
 
   # postgres DB setup
   config.vm.provision "shell" do |s|
-    s.name = "Creating Postgres Database"
+    s.name = "Creating PostgresDB/MariaDB"
     s.inline = localscriptDir + "/create.db.sh " + dbName + " " + dbUser + " " + dbPass + " " + dbType
   end
 
