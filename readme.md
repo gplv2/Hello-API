@@ -16,7 +16,6 @@
 
 #### A `Hello World` for API's : )
 
-
 ## Try with vagrant
 
 ### install plugin
@@ -40,8 +39,6 @@ You will see all the ubuntu extra fixes we made to ensure php/laravel etc is run
 The project is currently under heavy development. 
 So expect major updates without notice.
 Also note that there's **no stable release** till this date.
-
-
 
 
 ## Content
