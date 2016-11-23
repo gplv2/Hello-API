@@ -94,13 +94,13 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
   end
 
-  config.vm.provision "fix-no-tty", type: "shell" do |s|
+  config.vm.provision "shell" do |s|
     s.privileged = false
     s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
   end
 
   # Configure The Public Key For SSH Access
-  config.vm.provision "fix-no-tty", type: "shell" do |s|
+  config.vm.provision "shell" do |s|
     s.inline = "echo $1 | grep -xq \"$1\" /home/vagrant/.ssh/authorized_keys || echo \"\n$1\" | tee -a /home/vagrant/.ssh/authorized_keys"
     s.args = File.expand_path("~/.ssh/id_rsa", __FILE__)
   end
