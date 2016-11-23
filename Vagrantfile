@@ -102,7 +102,7 @@ Vagrant.configure("2") do |config|
   # Configure The Public Key For SSH Access
   config.vm.provision "shell" do |s|
     s.inline = "echo $1 | grep -xq \"$1\" /home/vagrant/.ssh/authorized_keys || echo \"\n$1\" | tee -a /home/vagrant/.ssh/authorized_keys"
-    s.args = File.expand_path("~/.ssh/id_rsa", __FILE__)
+    s.args = File.expand_path("~/.ssh/id_rsa.pub", __FILE__)
   end
 
   # The commands in comments are there because sometimes they fix things but 
