@@ -11,12 +11,12 @@ Vagrant.configure("2") do |config|
 
   #config.ssh.private_key_path = File.expand_path("~/.ssh/id_rsa.pub")
   #config.ssh.private_key_path = File.expand_path("~/.ssh/id_rsa", __FILE__)
-#  config.ssh.forward_agent = true
+  #config.ssh.forward_agent = true
   #config.ssh.insert_key = true
-#  config.ssh.port = 2222
-#  config.ssh.guest_port = 22
+  #config.ssh.port = 2222
+  #config.ssh.guest_port = 22
   #config.ssh.username = "vagrant"
-#  config.ssh.keys_only = true
+  #config.ssh.keys_only = true
 
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -100,10 +100,10 @@ Vagrant.configure("2") do |config|
   end
 
   # Configure The Public Key For SSH Access
-  #config.vm.provision "fix-no-tty", type: "shell" do |s|
-  #  s.inline = "echo $1 | grep -xq \"$1\" /home/vagrant/.ssh/authorized_keys || echo \"\n$1\" | tee -a /home/vagrant/.ssh/authorized_keys"
-  #  s.args = config.ssh.private_key_path
-  #end
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+    s.inline = "echo $1 | grep -xq \"$1\" /home/vagrant/.ssh/authorized_keys || echo \"\n$1\" | tee -a /home/vagrant/.ssh/authorized_keys"
+    s.args = File.expand_path("~/.ssh/id_rsa", __FILE__)
+  end
 
   # The commands in comments are there because sometimes they fix things but 
   # they are platform dependant.
