@@ -6,6 +6,16 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
+
+  # fix ssh
+
+  config.ssh.private_key_path = File.expand_path("~/.ssh/id_rsa", __FILE__)
+  #config.ssh.forward_agent = true
+  #config.ssh.insert_key = true
+  #config.ssh.port = 2222
+  #config.ssh.username = "vagrant"
+  #config.ssh.keys_only = true
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
@@ -18,6 +28,11 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "laravel/homestead"
+
+  # Configure The homestead Box
+  config.vm.define "homestead-7-hello"
+  config.vm.box_version = ">= 0.6.0"
+  config.vm.hostname = "homestead"
 
   # Configure Local Variable To Access Scripts From Remote Location
   scriptDir = File.dirname(__FILE__)
@@ -47,13 +62,18 @@ Vagrant.configure("2") do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Configure A Private Network IP
+  config.vm.network "private_network", ip: "192.168.10.10"
+
   # By default, a private network is already created, additionally, we'll
   # also make a bridge for easy access
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
-  config.vm.network "public_network"
+
+  # config.vm.network "public_network", adapter: "1"
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
@@ -63,12 +83,25 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.customize ["modifyvm", :id, "--memory", 2048 ]
     v.customize ["modifyvm", :id, "--cpus", 2 ]
+    # for homestead 0.6 to work (0.5 seemed less picky)
+    v.name = "homestead-7"
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    v.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
+  end
+
+  # set the keys
+  # Configure The Public Key For SSH Access
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+    s.inline = "echo $1 | grep -xq \"$1\" /home/vagrant/.ssh/authorized_keys || echo \"\n$1\" | tee -a /home/vagrant/.ssh/authorized_keys"
+    s.args = config.ssh.private_key_path
   end
 
   config.vm.provision "fix-no-tty", type: "shell" do |s|
     s.privileged = false
     s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
   end
+
   # The commands in comments are there because sometimes they fix things but 
   # they are platform dependant.
   # apt-get upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
