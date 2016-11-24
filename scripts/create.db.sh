@@ -23,15 +23,19 @@ if [ ! -x "/etc/postgresql/9.5/main/pg_hba.conf" ]; then
 fi
 
 if [ "$DBTYPE" = "psql" ]; then
-    echo "(re)Start postgres db ..."
+    echo "(re)Start Postgres DB ..."
     # service postgresql restart # Gives no output, so take old school one
     /etc/init.d/postgresql restart
 fi
 
+if [ ! -x "/etc/mysql/mariadb.conf.d/50-server.cnf" ]; then
+   sed -i "/# * InnoDB/innodb_buffer_pool_size = 512M\n# * InnoDB/" /etc/mysql/mariadb.conf.d/50-server.cnf
+fi
+
 if [ "$DBTYPE" = "mysql" ]; then
-    echo "(re)Start Mysql db ..."
-    # service postgresql restart # Gives no output, so take old school one
-    /etc/init.d/postgresql restart
+    echo "(re)Start Maria DB ..."
+    # restart mysql
+    service mysql restart
 fi
 
 echo "Preparing Database ... $1 / $2 "
@@ -39,9 +43,9 @@ echo "Preparing Database ... $1 / $2 "
 # some grace time as from time to time, it needs a second.
 sleep 2
 
-# su postgres -c "dropdb $DB --if-exists"
-
+# Setup postgresql
 if [ "$DBTYPE" = "psql" ]; then
+    # su postgres -c "dropdb $DB --if-exists"
     if ! su - postgres -c "psql -d $DB -c '\q' 2>/dev/null"; then
         su - postgres -c "createuser $USER"
         su - postgres -c "createdb --encoding='utf-8' --owner=$USER '$DB'"
@@ -52,5 +56,17 @@ if [ "$DBTYPE" = "psql" ]; then
 ALTER USER "$USER" WITH PASSWORD '${PASSWORD}';
 EOF
     su - postgres -c "cat /home/vagrant/install.postcreate.sql | psql -d $DB"
+fi
+
+# Setup mysql
+if [ "$DBTYPE" = "mysql" ]; then
+
+    mysql --user="root" -e "CREATE USER '${USER}'@'%' IDENTIFIED BY '${PASSWORD}';"
+    mysql --user="root" -e "GRANT ALL ON *.* TO '${USER}'@'0.0.0.0' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
+    mysql --user="root" -e "GRANT ALL ON *.* TO '${USER}'@'%' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
+    mysql --user="root" -e "FLUSH PRIVILEGES;"
+
+    mysql --user="root" -e "CREATE DATABASE IF NOT EXISTS \`$DB\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
+
 fi
 

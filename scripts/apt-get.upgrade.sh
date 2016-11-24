@@ -30,6 +30,14 @@ if [ ! -d "/var/log/provision" ]; then
     chown vagrant:vagrant /var/www/provision
 fi
 
+# Add mariadb early so we don't install older version first, then upgrade
+if [ "$DBTYPE" = "mysql" ]; then
+    echo "Setting apt up for latest MariaDB %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
+    # Add Maria PPA
+    DEBIAN_FRONTEND=noninteractive apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+    DEBIAN_FRONTEND=noninteractive add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.2/ubuntu xenial main'
+fi
+
 # Fix package problems & upgrade dist immediately
 DEBIAN_FRONTEND=noninteractive apt-get update
 
@@ -50,6 +58,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-co
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
 
 echo "Setting up for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
+
 
 echo "Provisioning virtual machine"
 

@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Check If Nginx Has Been Installed
+
+if [ -f /home/vagrant/.nginx.hello ]
+then
+    echo "Nginx already installed."
+    exit 0
+fi
+
+touch /home/vagrant/.nginx.hello
+
 DOMAIN=$1
 WEBROOT=$2
 
