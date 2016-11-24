@@ -27,7 +27,7 @@ echo "127.0.0.1 redis" >> /etc/hosts
 
 if [ ! -d "/var/log/provision" ]; then
     mkdir /var/log/provision 2>/dev/null
-    chown vagrant:vagrant /var/www/provision
+    chown vagrant:vagrant /var/log/provision
 fi
 
 # Fix package problems & upgrade dist immediately
