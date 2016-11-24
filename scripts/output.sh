@@ -29,6 +29,7 @@ EOF
 
    echo ""
    done
-
+   echo "When that is done, visit : http://admin.${APP_URL}/ ,  http://api.${APP_URL}/  and http://${APP_URL}/"
+   echo ""
 fi
 
