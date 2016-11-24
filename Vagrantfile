@@ -155,7 +155,7 @@ Vagrant.configure("2") do |config|
   # output useful information on setup
   config.vm.provision "shell", run: "always" do |s|
     s.name = "Finish and ouput status"
-    s.inline = localscriptDir + "/output.sh" + " " + ENV['APP_URL']
+    s.inline = localscriptDir + "/output.sh " + ENV['APP_URL']
   end
 
 
