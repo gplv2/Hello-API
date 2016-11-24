@@ -13,6 +13,8 @@ BRIDGED_IP=$(ifconfig | grep 'inet addr' | cut -d ':' -f 2 | awk '{ print $1 }' 
 
 echo "" ; echo "Vagrant Box shell provisioned!" ; echo ""
 
+   echo ""
+
 if [ -z "$BRIDGED_IP" ]; then
    echo "Cannot find a suitable private ip to connect to the app" ; echo ""
 else
@@ -25,8 +27,8 @@ else
 ${ip} ${APP_URL}
 ${ip} api.${APP_URL}
 ${ip} admin.${APP_URL}
-EOF
 
+EOF
    echo ""
    done
    echo "When that is done, visit : http://admin.${APP_URL}/ ,  http://api.${APP_URL}/  and http://${APP_URL}/"
