@@ -5,7 +5,7 @@ APP_HME_DIR=$1
 
 # is this app provisioned already ? (would mess / error out on things like db migrations)
 if [ -r /var/www/${APP_HME_DIR}/storage/logs/provisioned.status ]; then
-    echo "Status is already provisioned, you need to remove this file to do it again"
+    echo "App is already provisioned, you need to remove this file to do it again"
     exit 0;
 fi
 

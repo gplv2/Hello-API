@@ -133,6 +133,12 @@ Vagrant.configure("2") do |config|
     s.inline = localscriptDir + "/install.app.sh " + appHomeDir
   end
 
+  # Install dev stuff , currently npm + generate docs
+  config.vm.provision "shell", run: "once" do |s|
+    s.name = "Configuring NPM " + appHomeDir
+    s.inline = localscriptDir + "/install.dev.sh " + appHomeDir
+  end
+
   # setup the nginx site using script
   # s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
   config.vm.provision "shell", run: "once" do |s|
