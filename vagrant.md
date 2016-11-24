@@ -12,13 +12,17 @@ The reason to not use the shared directory as base of our application is that of
 ## Main Features
 
 * Do networking correct (include a bridge)
-* Deploys MariaDB 10.2 or Postgres database
-* Uses NGINX webserver + PHP/FPM
-* PHP 7.0
+* Fixes locale issue (perl warning)
+* Upgrades/updates and corrects all dpkg package issues
+* Provisions additional packages
+* Deploys MariaDB 10.2 or Postgres 9.5 database
+* Configures all os settings/config/databases and users
+* Uses NGINX webserver + PHP/FPM (configures the app)
+* PHP 7.0.13-1 (stable) , Optional installation of 7.1 possible
 * Deploys the app (check repo url)
 * Triggers right composer + artisan commands to correctly deploy
 
-### single configuration location 
+### single configuration source 
 
 with the env plugin, we can reuse .env.example to deploy our app.  So you clone the Hello-Api repository, make a copy of the example to .env and edit your preferences, then do `vagrant up`.  You need to be aware that any .env is excluded in being commited to git.  Changes you make in the .env file remain local changes.  But you don't need this to deploy your application. The default example file works out of the box. If you want to change this , you'll need to fork the repository and change the .env.example. Currently the repository is still hardcoded but that will change.
 
@@ -49,4 +53,10 @@ Now , it will use your .env file to create a vagrant setup, make sure you have o
 You will see all the provisioning tasks to ensure php/laravel etc is running decently on Ubuntu 16.04 custom homestead machine.
 
 ### vagrant ssh
+
+Now after a while, since it takes some time to complete, you'll see instructions on how to add hosts information to your system to contact the webserver.
+
+### update code
+
+If you change code locally, you can now choose to push it to your repository, on the vagrant machine you'll be able to use `git pull` to update the code.  When Container/Port code has been updated, you'll have to do a fresh installation at the time of writing this, but this is being worked at.
 
