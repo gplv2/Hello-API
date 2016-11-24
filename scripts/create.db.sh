@@ -28,11 +28,11 @@ if [ "$DBTYPE" = "psql" ]; then
     /etc/init.d/postgresql restart
 fi
 
-if [ ! -x "/etc/mysql/mysql.conf.d/mysqld.cnf" ]; then
-   sed -i "/# * InnoDB/innodb_buffer_pool_size = 512M\n# * InnoDB/" /etc/mysql/mysql.conf.d/mysqld.cnf
-fi
-
 if [ "$DBTYPE" = "mysql" ]; then
+    # Defaults to 256M , raise it:
+    if [ ! -x "/etc/mysql/my.cnf" ]; then
+       sed -i "/innodb_buffer_pool_size = 256M/innodb_buffer_pool_size = 512M/" /etc/mysql/my.cnf
+    fi
     echo "(re)Start Maria DB ..."
     # restart mysql
     service mysql restart
