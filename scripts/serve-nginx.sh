@@ -47,7 +47,7 @@ block="server {
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
 
-    access_log off;
+    access_log /var/log/nginx/$DOMAIN-ssl-access.log;
     error_log  /var/log/nginx/$DOMAIN-ssl-error.log error;
 
     sendfile off;
