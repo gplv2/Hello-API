@@ -89,7 +89,7 @@ Vagrant.configure("2") do |config|
   end
 
   # Add our own Public Key For SSH Access
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "once" do |s|
    ssh_pub_key_string = File.readlines(sshPublicKey).first.strip
    s.inline = <<-SHELL
       echo "#{ssh_pub_key_string}" >> /home/vagrant/.ssh/authorized_keys
@@ -116,7 +116,7 @@ Vagrant.configure("2") do |config|
   #end
 
   # postgres DB setup
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "once" do |s|
     s.name = "Creating PostgresDB/MariaDB"
     s.inline = localscriptDir + "/create.db.sh " + dbName + " " + dbUser + " " + dbPass + " " + dbType
   end
@@ -128,14 +128,14 @@ Vagrant.configure("2") do |config|
   end
 
   # Deploy the app using git clone and composer install, not by sharing a directory with the host
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "once" do |s|
     s.name = "Installing Hello-Api framework"
     s.inline = localscriptDir + "/install.app.sh " + appHomeDir
   end
 
   # setup the nginx site using script
   # s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "once" do |s|
       s.name = "Setup NGINX configs"
       s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['APP_URL'] + " /var/www/" + appHomeDir +"/public" + " 80"+ " 443"
   end
@@ -147,7 +147,7 @@ Vagrant.configure("2") do |config|
   end
 
   # output useful information on setup
-  config.vm.provision "shell" do |s|
+  config.vm.provision "shell", run: "always" do |s|
     s.name = "Finish and ouput status"
     s.inline = localscriptDir + "/output.sh" + " " + ENV['APP_URL']
   end

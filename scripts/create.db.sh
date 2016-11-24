@@ -5,10 +5,10 @@ USER=$2;
 PASSWORD=$3;
 DBTYPE=$4;
 
-# vagrant default subnet
+# vagrant default subnet (NAT)
 SUBNET=10.0.2.2/32
 
-# re-configure postgres auth/config 
+# re-configure postgres auth/config  (if postgres is on there, do it anyway even if we select other db)
 if [ ! -x "/etc/postgresql/9.5/main/postgresql.conf" ]; then
     printf "Enable listening on all interfaces"
     sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/9.5/main/postgresql.conf
@@ -24,6 +24,12 @@ fi
 
 if [ "$DBTYPE" = "psql" ]; then
     echo "(re)Start postgres db ..."
+    # service postgresql restart # Gives no output, so take old school one
+    /etc/init.d/postgresql restart
+fi
+
+if [ "$DBTYPE" = "mysql" ]; then
+    echo "(re)Start Mysql db ..."
     # service postgresql restart # Gives no output, so take old school one
     /etc/init.d/postgresql restart
 fi
