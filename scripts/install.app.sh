@@ -111,5 +111,19 @@ sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && php artisan optimize"
 echo "Dump autoload"
 sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer dump-autoload"
 
+# common aliases for laravel
+if [ ! -x "~/.bash_aliases" ]; then 
+   cat << EOF > ~/.bash_aliases
+alias h='cd ~'
+alias hm='cd /var/www/${APP_HME_DIR}'
+alias c='clear'
+alias art=artisan
+
+alias phpspec='vendor/bin/phpspec'
+alias phpunit='vendor/bin/phpunit'
+
+EOF
+fi
+
 # Mark end of provisioning for this app
 touch /var/www/${APP_HME_DIR}/storage/logs/provisioned.status
