@@ -7,35 +7,23 @@
 # you're doing.
 Vagrant.configure("2") do |config|
 
-  # fix ssh
-
-  #config.ssh.private_key_path = File.expand_path("~/.ssh/id_rsa.pub")
-  #config.ssh.private_key_path = File.expand_path("~/.ssh/id_rsa", __FILE__)
-  #config.ssh.forward_agent = true
-  #config.ssh.insert_key = true
-  #config.ssh.port = 2222
-  #config.ssh.guest_port = 22
-  #config.ssh.username = "vagrant"
-  #config.ssh.keys_only = true
-
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
   # install and enable vagrant-env plugin
   # see https://github.com/gosuri/vagrant-env
-
   config.env.enable # enable the plugin
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "laravel/homestead"
 
-  # Configure The homestead Box
+  # Configure The homestead Box for Hello Api
   config.vm.define "homestead-7-hello"
   config.vm.box_version = ">= 0.6.0"
   config.vm.hostname = "homestead"
-
+    
   # Configure Local Variable To Access Scripts From Remote Location
   scriptDir = File.dirname(__FILE__)
   localscriptDir = "/vagrant/scripts"
@@ -45,11 +33,13 @@ Vagrant.configure("2") do |config|
   dbName = ENV['DB_DATABASE']
   dbPass = ENV['DB_PASSWORD']
   dbType = ENV['DB_CONNECTION']
+  # it might be wise to not use spaces or special chars in usernames/passwords ...
+
+  sshPublicKey = "#{Dir.home}/.ssh/id_rsa.pub"
   
   # pass the www subdir to the scripts
   appHomeDir = "hello-api"
 
-  # it might be wise to not use spaces in usernames/passwords ...
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -63,19 +53,16 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
 
   # Configure A Private Network IP
-  #config.vm.network "private_network", ip: "192.168.10.10"
-
-  # By default, a private network is already created, additionally, we'll
-  # also make a bridge for easy access
+  # config.vm.network "private_network", ip: "192.168.10.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
 
-  #config.vm.network "public_network", adapter: "0"
+  # By default, a private network is already created, additionally, we'll
+  # also make a bridge for easy access
   config.vm.network "public_network"
 
   # Share an additional folder to the guest VM. The first argument is
@@ -95,17 +82,17 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
   end
 
+  # fix the shell
   config.vm.provision "fix-no-tty", type: "shell" do |s|
     s.privileged = false
     s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
   end
 
-  # Configure The Public Key For SSH Access
+  # Add our own Public Key For SSH Access
   config.vm.provision "shell" do |s|
-    #s.args = File.expand_path("~/.ssh/id_rsa.pub", __FILE__)
-   ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+   ssh_pub_key_string = File.readlines(sshPublicKey).first.strip
    s.inline = <<-SHELL
-      echo "#{ssh_pub_key}" >> /home/vagrant/.ssh/authorized_keys
+      echo "#{ssh_pub_key_string}" >> /home/vagrant/.ssh/authorized_keys
     SHELL
   end
 
@@ -140,7 +127,7 @@ Vagrant.configure("2") do |config|
     s.inline = "service php7.0-fpm restart"
   end
 
-  # Deploy the app
+  # Deploy the app using git clone and composer install, not by sharing a directory with the host
   config.vm.provision "shell" do |s|
     s.name = "Installing Hello-Api framework"
     s.inline = localscriptDir + "/install.app.sh " + appHomeDir
@@ -153,17 +140,18 @@ Vagrant.configure("2") do |config|
       s.inline = localscriptDir + "/serve-nginx.sh" + " " + ENV['APP_URL'] + " /var/www/" + appHomeDir +"/public" + " 80"+ " 443"
   end
 
+  # restart nginx/fpm (1 extra needed)
   config.vm.provision "shell" do |s|
     s.name = "Restarting Nginx and PHPFPM"
     s.inline = "sudo service nginx restart; sudo service php7.0-fpm restart"
   end
 
+  # output useful information on setup
   config.vm.provision "shell" do |s|
     s.name = "Finish and ouput status"
     s.inline = localscriptDir + "/output.sh" + " " + ENV['APP_URL']
   end
 
-  # output some stuff
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
