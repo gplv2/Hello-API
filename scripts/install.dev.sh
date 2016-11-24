@@ -25,9 +25,9 @@ sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && npm install 2>/dev/null"
 
 # Generate docs
 echo "Generate public API docs"
-sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && $(npm bin)/apidoc -f external.php -i app -o public/api/documentation"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && \$(npm bin)/apidoc -f external.php -i app -o public/api/documentation"
 echo "Generate private API docs"
-sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && $(npm bin)/apidoc -f internal.php -i app -o public/api/private/documentation"
+sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && \$(npm bin)/apidoc -f internal.php -i app -o public/api/private/documentation"
 
 # Mark end of provisioning for this app
 touch /var/www/${APP_HME_DIR}/storage/logs/npm.status
