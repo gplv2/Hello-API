@@ -28,8 +28,8 @@ if [ "$DBTYPE" = "psql" ]; then
     /etc/init.d/postgresql restart
 fi
 
-if [ ! -x "/etc/mysql/mariadb.conf.d/50-server.cnf" ]; then
-   sed -i "/# * InnoDB/innodb_buffer_pool_size = 512M\n# * InnoDB/" /etc/mysql/mariadb.conf.d/50-server.cnf
+if [ ! -x "/etc/mysql/mysql.conf.d/mysqld.cnf" ]; then
+   sed -i "/# * InnoDB/innodb_buffer_pool_size = 512M\n# * InnoDB/" /etc/mysql/mysql.conf.d/mysqld.cnf
 fi
 
 if [ "$DBTYPE" = "mysql" ]; then
@@ -61,12 +61,12 @@ fi
 # Setup mysql
 if [ "$DBTYPE" = "mysql" ]; then
 
-    mysql --user="root" -e "CREATE USER '${USER}'@'%' IDENTIFIED BY '${PASSWORD}';"
-    mysql --user="root" -e "GRANT ALL ON *.* TO '${USER}'@'0.0.0.0' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
-    mysql --user="root" -e "GRANT ALL ON *.* TO '${USER}'@'%' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
-    mysql --user="root" -e "FLUSH PRIVILEGES;"
+    mysql --user="root" -pdatacharmer -e "CREATE USER '${USER}'@'%' IDENTIFIED BY '${PASSWORD}';"
+    mysql --user="root" -pdatacharmer -e "GRANT ALL ON *.* TO '${USER}'@'0.0.0.0' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
+    mysql --user="root" -pdatacharmer -e "GRANT ALL ON *.* TO '${USER}'@'%' IDENTIFIED BY '${PASSWORD}' WITH GRANT OPTION;"
+    mysql --user="root" -pdatacharmer -e "FLUSH PRIVILEGES;"
 
-    mysql --user="root" -e "CREATE DATABASE IF NOT EXISTS \`$DB\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
+    mysql --user="root" -pdatacharmer -e "CREATE DATABASE IF NOT EXISTS \`$DB\` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci";
 
 fi
 

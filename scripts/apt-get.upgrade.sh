@@ -51,6 +51,18 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-co
 
 echo "Setting up for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
 
+if [ "$DBTYPE" = "mysql" ]; then
+   echo "Remove standard MysqlDB"
+   # Remove standard MySQL
+   DEBIAN_FRONTEND=noninteractive apt-get remove -y --purge mysql-server mysql-client mysql-common
+   DEBIAN_FRONTEND=noninteractive apt-get autoremove -y
+   DEBIAN_FRONTEND=noninteractive apt-get autoclean
+
+   rm -rf /var/lib/mysql
+   rm -rf /var/log/mysql
+   rm -rf /etc/mysql
+fi
+
 echo "Provisioning virtual machine"
 
 # Add mariadb early so we don't install older version first, then upgrade
@@ -61,6 +73,10 @@ if [ "$DBTYPE" = "mysql" ]; then
     DEBIAN_FRONTEND=noninteractive add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/10.2/ubuntu xenial main'
 
     DEBIAN_FRONTEND=noninteractive apt-get update
+
+    DEBIAN_FRONTEND=noninteractive debconf-set-selections <<< 'mariadb-server-10.2 mysql-server/data-dir select ''"'
+    DEBIAN_FRONTEND=noninteractive debconf-set-selections <<< 'mariadb-server-10.2 mysql-server/root_password password datacharmer'
+    DEBIAN_FRONTEND=noninteractive debconf-set-selections <<< 'mariadb-server-10.2 mysql-server/root_password_again password datacharmer'
 fi
 
 echo "Install packages ..."
