@@ -2,6 +2,8 @@
 export DEBIAN_FRONTEND=noninteractive
 
 APP_HME_DIR=$1
+SOURCE_REPOSITORY="https://github.com/gplv2/Hello-API.git"
+#SOURCE_REPOSITORY="https://github.com/Porto-SAP/Hello-API.git"
 
 # is this app provisioned already ? (would mess / error out on things like db migrations)
 if [ -r /var/www/${APP_HME_DIR}/storage/logs/provisioned.status ]; then
@@ -74,9 +76,8 @@ if [ -d "/var/www" ]; then
     chown vagrant:vagrant /var/www/
 fi
 
-#sudo su - vagrant -c "cd /var/www && git clone https://github.com/Porto-SAP/Hello-API.git ${APP_HME_DIR}"
-sudo su - vagrant -c "cd /var/www && git clone https://github.com/gplv2/Hello-API.git ${APP_HME_DIR}"
-# git@github.com:gplv2/Hello-API.git / https://github.com/gplv2/Hello-API.git
+# Clone the target repo
+sudo su - vagrant -c "cd /var/www && git clone ${SOURCE_REPOSITORY} ${APP_HME_DIR}"
 
 echo "Fixing ownerships and permissions"
 
