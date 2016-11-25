@@ -113,8 +113,8 @@ echo "Dump autoload"
 sudo su - vagrant -c "cd /var/www/${APP_HME_DIR} && composer dump-autoload"
 
 # common aliases for laravel
-if [ ! -x "~/.bash_aliases" ]; then 
-   cat << EOF > ~/.bash_aliases
+if [ ! -x "/home/vagrant/.bash_aliases" ]; then 
+   cat << EOF > /home/vagrant/.bash_aliases
 alias h='cd ~'
 alias hm='cd /var/www/${APP_HME_DIR}'
 alias c='clear'
@@ -125,6 +125,8 @@ alias phpunit='vendor/bin/phpunit'
 
 EOF
 fi
+
+chown vagrant:vagrant /home/vagrant/.bash_aliases
 
 # Mark end of provisioning for this app
 touch /var/www/${APP_HME_DIR}/storage/logs/provisioned.status
