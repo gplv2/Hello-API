@@ -19,10 +19,10 @@ fi
 
 # trust our vagrant subnet
 if [ ! -x "/etc/postgresql/9.5/main/pg_hba.conf" ]; then
-    echo "\nhost    all             all             $SUBNET           trust" >> /etc/postgresql/9.5/main/pg_hba.conf
+    echo "host    all             all             $SUBNET           trust" >> /etc/postgresql/9.5/main/pg_hba.conf
 fi
 
-if [ "$DBTYPE" = "psql" ]; then
+if [ "$DBTYPE" = "pgsql" ]; then
     echo "(re)Start Postgres DB ..."
     # service postgresql restart # Gives no output, so take old school one
     /etc/init.d/postgresql restart
@@ -44,7 +44,7 @@ echo "Preparing Database ... $1 / $2 "
 sleep 2
 
 # Setup postgresql
-if [ "$DBTYPE" = "psql" ]; then
+if [ "$DBTYPE" = "pgsql" ]; then
     # su postgres -c "dropdb $DB --if-exists"
     if ! su - postgres -c "psql -d $DB -c '\q' 2>/dev/null"; then
         su - postgres -c "createuser $USER"
