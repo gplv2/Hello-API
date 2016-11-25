@@ -49,6 +49,10 @@ printf "Preparing for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" zip unzip
 DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" -f
 
+printf "Removing apparmor\n" 
+# Remove apparmor , this is not needed for a vagrant box plus it messes up mariadb, just remove it
+DEBIAN_FRONTEND=noninteractive apt-get remove -y apparmor
+
 echo "Setting up for ubuntu %s - %s\n" "$DISTRIB_RELEASE" "$DISTRIB_CODENAME"
 
 if [ "$DBTYPE" = "mysql" ]; then
